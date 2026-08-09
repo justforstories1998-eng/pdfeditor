@@ -278,6 +278,9 @@ class ReplaceTextCommand(PageSnapshotCommand):
             page.add_redact_annot(target, fill=_redact_fill(self.background))
             page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE)
             if not self.new_text.strip():
+                # Text was deleted: shift content below up to close the gap
+                # so no blank space remains.
+                _shift_content_up(self.doc, self.page, self.rect, self.rect.height)
                 return
 
             available = self.rect.width
@@ -439,6 +442,90 @@ def _shift_content_down(
         for line_rect, text, line_style in movable:
             moved = Rect(
                 line_rect.x0, line_rect.y0 + amount, line_rect.x1, line_rect.y1 + amount
+            )
+            draw_layout(
+                target,
+                TextLayout(
+                    lines=[text],
+                    font_size=line_style.size,
+                    line_height=line_style.line_height,
+                ),
+                moved,
+                line_style,
+            )
+
+
+def _shift_content_up(
+    doc: PdfDocument, page: int, rect: Rect, amount: float
+) -> None:
+    """Move the text below ``rect`` up by ``amount`` points.
+
+    Used when text is deleted: the lines that follow it are lifted
+    out and re-drawn higher to close the gap. Only text in the same
+    column is moved.
+    """
+    if amount <= 0:
+        return
+
+    page_height = doc.page_size(page)[1]
+    column = Rect(rect.x0 - 2, rect.y1 - 1, rect.x1 + 2, page_height)
+
+    lines: list[tuple[Rect, str, TextStyle]] = []
+    for block in doc.extract_blocks(page):
+        for line in block.lines:
+            if line.rect.y0 < rect.y1 - 0.5:
+                continue
+            spans = [sp for sp in line.spans if sp.text.strip()]
+            if not spans:
+                continue
+            widest = max(spans, key=lambda sp: sp.rect.width)
+            lines.append(
+                (
+                    line.rect,
+                    line.text,
+                    TextStyle(
+                        font=widest.font,
+                        size=widest.size or 11.0,
+                        color=widest.color,
+                        bold=widest.bold,
+                        italic=widest.italic,
+                    ),
+                )
+            )
+
+    in_column = [index for index, item in enumerate(lines) if item[0].intersects(column)]
+    if not in_column:
+        return
+
+    rows = [lines[index][0] for index in in_column]
+
+    def shares_a_row(candidate: Rect) -> bool:
+        return any(candidate.y0 < row.y1 - 0.5 and candidate.y1 > row.y0 + 0.5 for row in rows)
+
+    chosen = set(in_column)
+    movable = [
+        item for index, item in enumerate(lines) if index in chosen or shares_a_row(item[0])
+    ]
+    if not movable:
+        return
+
+    # Don't shift above the top of the page
+    min_top = min(line.y0 for line, _t, _s in movable) - amount
+    if min_top < 0:
+        amount = max(0.0, min(line.y0 for line, _t, _s in movable))
+
+    with doc.locked() as handle:
+        target = handle[page]
+        # Erase the old positions in one pass, then redraw them higher.
+        for line_rect, _text, _style in movable:
+            target.add_redact_annot(fitz.Rect(*line_rect), fill=False)
+        target.apply_redactions(
+            images=fitz.PDF_REDACT_IMAGE_NONE,
+            graphics=fitz.PDF_REDACT_LINE_ART_NONE,
+        )
+        for line_rect, text, line_style in movable:
+            moved = Rect(
+                line_rect.x0, line_rect.y0 - amount, line_rect.x1, line_rect.y1 - amount
             )
             draw_layout(
                 target,

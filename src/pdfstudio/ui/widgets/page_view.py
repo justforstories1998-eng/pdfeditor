@@ -606,6 +606,27 @@ class PageView(QAbstractScrollArea):
         self.selection_changed.emit(self._selected_text)
         self.viewport().update()
 
+    def select_paragraph_at(self, page: int, point: Point) -> None:
+        """Select all text in the paragraph under ``point``."""
+        if self._document is None:
+            return
+        from pdfstudio.pdfengine.content import TextEditor
+        editor = TextEditor(self._document)
+        block = editor.block_at(page, point)
+        if block is None:
+            return
+        # Select all words in the block's rectangle
+        words = []
+        for rect, word in self._document.extract_words(page):
+            if block.rect.contains(rect.center):
+                words.append((rect, word))
+        if not words:
+            return
+        self._selection_rects = [(page, rect) for rect, _ in words]
+        self._selected_text = " ".join(word for _, word in words)
+        self.selection_changed.emit(self._selected_text)
+        self.viewport().update()
+
     def copy_selection(self) -> None:
         if self._selected_text:
             QGuiApplication.clipboard().setText(self._selected_text)

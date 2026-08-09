@@ -845,6 +845,10 @@ class MainWindow(QMainWindow):
                 "Edit this paragraph",
                 lambda: self.controller.edit_text_block(page, None, point, True),
             )
+            menu.addAction(
+                "Select entire paragraph",
+                lambda: view.select_paragraph_at(page, point),
+            )
 
             # Word-style paragraph tools, acting on the text just clicked.
             view.set_last_text_point(page, point)
