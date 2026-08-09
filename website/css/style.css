@@ -267,20 +267,6 @@ img {
   flex-shrink: 0;
 }
 
-/* Install Caption */
-.install-caption {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 48px;
-}
-
-.install-caption code {
-  background: rgba(255, 255, 255, 0.06);
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
 /* Command Bar */
 .command-bar {
   width: 100%;
