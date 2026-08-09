@@ -339,9 +339,14 @@ def build_portable() -> Path:
         "and autosaves in a 'data' folder next to the executable.\n",
         "utf-8",
     )
+    # Rename folder to "PDF Studio" so extraction creates a proper display name
+    display_bundle = bundle.parent / "PDF Studio"
+    if display_bundle.exists():
+        shutil.rmtree(display_bundle)
+    shutil.move(str(bundle), str(display_bundle))
     system = platform.system().lower()
     archive = DIST / f"PDFStudio-{VERSION}-{system}-portable"
-    result = shutil.make_archive(str(archive), "zip", root_dir=bundle.parent, base_dir=bundle.name)
+    result = shutil.make_archive(str(archive), "zip", root_dir=display_bundle.parent, base_dir=display_bundle.name)
     return Path(result)
 
 
