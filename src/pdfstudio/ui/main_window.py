@@ -79,6 +79,7 @@ TOOL_MAP: dict[str, Tool] = {
     "tool.text_select": Tool.TEXT_SELECT,
     "tool.zoom": Tool.ZOOM,
     "tool.edit_text": Tool.EDIT_TEXT,
+    "tool.select_paragraph": Tool.SELECT_PARAGRAPH,
     "tool.move_object": Tool.MOVE_OBJECT,
     "object.move": Tool.MOVE_OBJECT,
     "annot.highlight": Tool.HIGHLIGHT,
@@ -110,6 +111,10 @@ TOOL_HINTS: dict[Tool, str] = {
     Tool.EDIT_TEXT: (
         "Edit text: click a line to change it in place · Alt+click for the whole "
         "paragraph · Enter applies, Esc cancels"
+    ),
+    Tool.SELECT_PARAGRAPH: (
+        "Select paragraph: drag a rectangle around the paragraph · "
+        "Enter to edit · Esc to cancel"
     ),
     Tool.MOVE_OBJECT: (
         "Move object: click anything to select it · drag or use the arrow keys · "

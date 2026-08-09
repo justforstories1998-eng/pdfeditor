@@ -118,6 +118,7 @@ class Tool(StrEnum):
     CROP = auto()
     EDIT_TEXT = auto()
     MOVE_OBJECT = auto()
+    SELECT_PARAGRAPH = auto()
 
 
 @dataclass(slots=True)
@@ -210,6 +211,9 @@ class PageView(QAbstractScrollArea):
         self._object_drag_origin: Point | None = None
         self._object_drag_delta: tuple[float, float] = (0.0, 0.0)
         self._rubber = QRubberBand(QRubberBand.Shape.Rectangle, self.viewport())
+        #: Bounding box of the paragraph selected via SELECT_PARAGRAPH tool.
+        self._paragraph_selection_rect: Rect | None = None
+        self._paragraph_selection_page: int = -1
 
         # smooth scrolling
         self._scroll_animation = QPropertyAnimation(self.verticalScrollBar(), b"value", self)
@@ -572,6 +576,7 @@ class PageView(QAbstractScrollArea):
             Tool.INK: Qt.CursorShape.CrossCursor,
             Tool.CROP: Qt.CursorShape.CrossCursor,
             Tool.REDACT: Qt.CursorShape.CrossCursor,
+            Tool.SELECT_PARAGRAPH: Qt.CursorShape.CrossCursor,
             Tool.NOTE: Qt.CursorShape.PointingHandCursor,
             Tool.MOVE_OBJECT: Qt.CursorShape.SizeAllCursor,
         }
@@ -581,6 +586,9 @@ class PageView(QAbstractScrollArea):
         if tool is not Tool.MOVE_OBJECT:
             self.set_selected_object(None)
         self._clear_drag()
+        # Clear paragraph selection when switching tools.
+        self._paragraph_selection_rect = None
+        self._paragraph_selection_page = -1
 
     @property
     def tool(self) -> Tool:
@@ -633,6 +641,37 @@ class PageView(QAbstractScrollArea):
             self.status_message.emit(
                 f"Copied {len(self._selected_text)} characters to the clipboard"
             )
+
+    def _select_paragraph_in_rect(self, page: int, rect: Rect) -> None:
+        """Select all text blocks that intersect *rect* on *page*."""
+        if self._document is None:
+            return
+        blocks = self._document.extract_blocks(page)
+        # Find blocks whose rectangle intersects the drag rect.
+        selected_words: list[tuple[Rect, str]] = []
+        merged_rect: Rect | None = None
+        for block in blocks:
+            if not block.rect.intersects(rect):
+                continue
+            # Collect all words inside this block.
+            for word_rect, word in self._document.extract_words(page):
+                if block.rect.contains(word_rect.center):
+                    selected_words.append((word_rect, word))
+            merged_rect = block.rect if merged_rect is None else merged_rect.united(block.rect)
+        if not selected_words:
+            self.clear_selection()
+            self._paragraph_selection_rect = None
+            self.viewport().update()
+            return
+        self._selection_rects = [(page, r) for r, _ in selected_words]
+        self._selected_text = " ".join(w for _, w in selected_words)
+        self._paragraph_selection_rect = merged_rect
+        self._paragraph_selection_page = page
+        self.selection_changed.emit(self._selected_text)
+        self.status_message.emit(
+            f"Paragraph selected — press Enter to edit, or click the Edit button"
+        )
+        self.viewport().update()
 
     # ------------------------------------------------------------------ #
     # Coordinate conversion
@@ -698,6 +737,7 @@ class PageView(QAbstractScrollArea):
         self._paint_object_overlay(painter)
         self._paint_edit_mask(painter)
         self._paint_selection(painter)
+        self._paint_paragraph_selection(painter)
         self._paint_search_hits(painter)
         self._paint_drag_feedback(painter)
         painter.end()
@@ -840,6 +880,20 @@ class PageView(QAbstractScrollArea):
             painter.drawRoundedRect(self._to_view(page_rect, rect).adjusted(-1, 0, 1, 0), 2, 2)
         painter.setBrush(Qt.BrushStyle.NoBrush)
 
+    def _paint_paragraph_selection(self, painter: QPainter) -> None:
+        """Draw a dashed bounding box around the paragraph selected via SELECT_PARAGRAPH."""
+        if self._paragraph_selection_rect is None or self._paragraph_selection_page < 0:
+            return
+        page_rect = self.page_rect_in_view(self._paragraph_selection_page)
+        if page_rect is None:
+            return
+        view_rect = self._to_view(page_rect, self._paragraph_selection_rect)
+        # Dashed blue border with a light fill.
+        painter.setPen(QPen(QColor("#3d7eff"), 2, Qt.PenStyle.DashLine))
+        painter.setBrush(QBrush(QColor(61, 126, 255, 25)))
+        painter.drawRoundedRect(view_rect.adjusted(-4, -4, 4, 4), 4, 4)
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+
     def _paint_search_hits(self, painter: QPainter) -> None:
         if not self._search_hits:
             return
@@ -865,6 +919,10 @@ class PageView(QAbstractScrollArea):
             case Tool.ZOOM | Tool.CROP:
                 painter.setPen(QPen(QColor("#3d7eff"), 1, Qt.PenStyle.DashLine))
                 painter.setBrush(QBrush(QColor(61, 126, 255, 40)))
+                painter.drawRect(rect)
+            case Tool.SELECT_PARAGRAPH:
+                painter.setPen(QPen(QColor("#3d7eff"), 1.5, Qt.PenStyle.DashLine))
+                painter.setBrush(QBrush(QColor(61, 126, 255, 30)))
                 painter.drawRect(rect)
             case Tool.RECTANGLE | Tool.REDACT:
                 painter.setPen(QPen(QColor("#e5484d"), 2))
@@ -1272,6 +1330,22 @@ class PageView(QAbstractScrollArea):
             event.accept()
             return
 
+        # Enter on a SELECT_PARAGRAPH selection opens the inline editor.
+        if (
+            key == Qt.Key.Key_Return
+            and self._paragraph_selection_rect is not None
+            and self._paragraph_selection_page >= 0
+        ):
+            r = self._paragraph_selection_rect
+            self.text_edit_requested.emit(
+                self._paragraph_selection_page,
+                r,
+                None,
+                True,
+            )
+            event.accept()
+            return
+
         match key:
             case Qt.Key.Key_Space if modifiers == Qt.KeyboardModifier.NoModifier:
                 self.verticalScrollBar().triggerAction(
@@ -1298,6 +1372,9 @@ class PageView(QAbstractScrollArea):
                     self.set_presentation_mode(False)
                 else:
                     self.clear_selection()
+                    self._paragraph_selection_rect = None
+                    self._paragraph_selection_page = -1
+                    self.viewport().update()
             case Qt.Key.Key_Up if modifiers & Qt.KeyboardModifier.AltModifier:
                 # Alt+Up/Down reorders lines, matching Word and every IDE.
                 self.command_requested.emit("text.move_line_up")
@@ -1383,6 +1460,8 @@ class PageView(QAbstractScrollArea):
                 self._emit_markup()
             case Tool.EDIT_TEXT if not tiny:
                 self.text_edit_requested.emit(page, rect)
+            case Tool.SELECT_PARAGRAPH if not tiny:
+                self._select_paragraph_in_rect(page, rect)
         self._clear_drag()
 
     def _zoom_to_rect(self, page_rect: QRectF, rect: Rect) -> None:
