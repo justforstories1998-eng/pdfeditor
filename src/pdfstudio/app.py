@@ -83,7 +83,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     app.setDesktopFileName(APP_ID)
     app.setStyle("Fusion")
 
-    icon_path = Path(__file__).parent / "resources" / "icons" / "pdfstudio.png"
+    base = Path(getattr(sys, "_MEIPASS", Path(__file__).parent))
+    icon_path = base / "resources" / "icons" / "pdfstudio.png"
+    if not icon_path.exists():
+        icon_path = Path(__file__).parent / "resources" / "icons" / "pdfstudio.png"
     if icon_path.exists():
         app.setWindowIcon(QIcon(str(icon_path)))
 
