@@ -415,9 +415,16 @@ def _shift_content_down(
     if not movable:
         return
 
-    if max(line.y1 for line, _t, _s in movable) + amount > page_height - 18:
-        log.warning("Not enough room below to reflow; text may overlap")
-        return
+    # Limit the shift to what fits on the page instead of silently returning.
+    # Returning without shifting when there isn't room causes the replacement
+    # text to overlap the lines below — the "text goes blank" symptom.
+    max_bottom = max(line.y1 for line, _t, _s in movable) + amount
+    if max_bottom > page_height - 18:
+        available = (page_height - 18) - max(line.y1 for line, _t, _s in movable)
+        if available <= 0:
+            log.warning("Not enough room below to reflow; text may overlap")
+            return
+        amount = max(0.0, available)
 
     with doc.locked() as handle:
         target = handle[page]
@@ -1069,11 +1076,13 @@ class TextEditor:
                 smaller = min(upper_size, lower_size)
                 if larger - smaller > 0.5 and larger / smaller > 1.15:
                     return False
+            # More lenient merging: allow up to 10pt margin difference and
+            # gap up to 1.0 * line_height to handle more paragraph layouts.
             return (
-                abs(lower.rect.x0 - upper.rect.x0) <= 6.0  # same left margin
+                abs(lower.rect.x0 - upper.rect.x0) <= 10.0  # same left margin
                 # Consecutive lines sit within about one line-height of each
                 # other; a wider gap is deliberate paragraph spacing.
-                and -1.0 <= gap <= leading * 0.6
+                and -2.0 <= gap <= leading * 1.0
             )
 
         ordered = sorted(blocks, key=lambda b: (round(b.rect.y0, 1), b.rect.x0))

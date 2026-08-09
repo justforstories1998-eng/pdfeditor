@@ -789,10 +789,15 @@ class PageView(QAbstractScrollArea):
         scale_x = image.width() / max(page_rect.width(), 1.0)
         scale_y = image.height() / max(page_rect.height(), 1.0)
         mid_y = area.center().y() - page_rect.y()
+        # Sample from further away (12px) to avoid hitting rendered text,
+        # and try more fallback positions including corners.
         candidates = (
-            (area.left() - page_rect.x() - 6, mid_y),
-            (area.right() - page_rect.x() + 6, mid_y),
-            (area.center().x() - page_rect.x(), area.top() - page_rect.y() - 6),
+            (area.left() - page_rect.x() - 12, mid_y),
+            (area.right() - page_rect.x() + 12, mid_y),
+            (area.center().x() - page_rect.x(), area.top() - page_rect.y() - 12),
+            (area.left() - page_rect.x() - 20, mid_y),
+            (area.right() - page_rect.x() + 20, mid_y),
+            (area.center().x() - page_rect.x(), area.top() - page_rect.y() - 20),
         )
         for cx, cy in candidates:
             px = int(cx * scale_x)
