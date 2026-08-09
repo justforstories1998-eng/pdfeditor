@@ -84,7 +84,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     app.setStyle("Fusion")
 
     base = Path(getattr(sys, "_MEIPASS", Path(__file__).parent))
-    icon_path = base / "resources" / "icons" / "pdfstudio.png"
+    icon_path = base / "pdfstudio" / "resources" / "icons" / "pdfstudio.png"
     if not icon_path.exists():
         icon_path = Path(__file__).parent / "resources" / "icons" / "pdfstudio.png"
     if icon_path.exists():
