@@ -81,7 +81,7 @@ def setup_logging(
     logger.remove()
     logger.configure(extra={"scope": "app"})
 
-    if console:
+    if console and sys.stderr is not None:
         logger.add(
             sys.stderr,
             level=lvl,
