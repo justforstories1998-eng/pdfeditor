@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Simplified diamond, single warm color for legibility at small sizes -->
+  <path d="M16 2 L28 16 L16 30 L4 16 Z" fill="#ff6b4a"/>
+</svg>

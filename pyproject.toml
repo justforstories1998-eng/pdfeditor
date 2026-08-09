@@ -1,0 +1,118 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdfstudio"
+version = "1.4.0"
+description = "A professional-grade PDF editor for Windows, macOS and Linux"
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "MIT" }
+authors = [{ name = "PDF Studio Project" }]
+keywords = ["pdf", "editor", "ocr", "annotations", "forms", "pyside6"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business",
+    "Topic :: Multimedia :: Graphics :: Editors",
+]
+dependencies = [
+    "PySide6-Essentials>=6.7",
+    "pymupdf>=1.24",
+    "pikepdf>=8",
+    "pypdf>=4",
+    "Pillow>=10",
+    "numpy>=1.26",
+    "loguru>=0.7",
+]
+
+[project.optional-dependencies]
+ocr = ["pytesseract>=0.3.10", "opencv-python-headless>=4.9"]
+ocr-neural = ["easyocr>=1.7"]
+office = ["python-docx>=1.1", "python-pptx>=0.6", "openpyxl>=3.1", "markdown>=3.5"]
+signatures = ["pyhanko[pkcs11]>=0.25", "cryptography>=42"]
+forms = ["qrcode>=7.4", "python-barcode>=0.15"]
+images = ["pillow-heif>=0.16", "rawpy>=0.21"]
+cloud = ["requests>=2.31", "google-api-python-client>=2", "dropbox>=11", "msal>=1.28"]
+full = ["pdfstudio[ocr,office,signatures,forms,images,cloud]"]
+dev = [
+    "pytest>=8", "pytest-cov>=5", "pytest-qt>=4.4", "pytest-benchmark>=4",
+    "ruff>=0.5", "mypy>=1.10", "black>=24.4", "pre-commit>=3.7",
+    "pyinstaller>=6.6", "sphinx>=7.3", "sphinx-rtd-theme>=2",
+]
+
+[project.urls]
+Homepage = "https://github.com/pdfstudio/pdfstudio"
+Documentation = "https://pdfstudio.readthedocs.io"
+Issues = "https://github.com/pdfstudio/pdfstudio/issues"
+
+[project.scripts]
+pdfstudio-cli = "pdfstudio.cli:main"
+
+[project.gui-scripts]
+pdfstudio = "pdfstudio.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+pdfstudio = ["resources/**/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+    "slow: long-running tests",
+    "gui: requires a Qt display",
+    "ocr: requires an OCR engine",
+    "benchmark: performance benchmarks",
+]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 96
+target-version = "py313"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "RUF", "PL", "S", "BLE"]
+ignore = [
+    "E501",      # long lines are handled by the formatter
+    "PLR0913", "PLR0912", "PLR0915", "PLR0911", "PLR2004",  # rich UI code
+    "S101",      # asserts are used deliberately as invariants
+    "N818",      # our exceptions read better without an "Error" suffix everywhere
+    "BLE001",    # broad excepts are intentional at isolation boundaries
+    "PLC0415",   # deferred imports keep start-up fast and avoid cycles
+    "PLE1205",   # false positive: loguru uses {} placeholders, not %-format
+    "S112",      # continue-after-except is the right recovery in parsers
+    "S110",      # likewise for pass
+    "PLW0603",   # module singletons are managed deliberately
+    "UP046",     # PEP 695 generics not adopted yet
+    "RUF001", "RUF002", "RUF003",  # typographic punctuation is intentional
+    "PLW0108",   # explicit lambdas keep Qt signal wiring readable
+    "B027",      # optional plugin hooks are deliberately non-abstract
+    "N806",      # deferred `Image = _require_pillow()` reads better capitalised
+    "RUF007",    # zip(x, x[1:]) is clearer than pairwise for point runs
+    "S314",      # XFDF is parsed from user files, guarded by try/except
+    "PLR0917",   # keyword-heavy constructors in the UI layer
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S", "PLR", "N802"]
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+plugins = []
+
+[tool.coverage.run]
+source = ["src/pdfstudio"]
+omit = ["*/ui/*", "*/__main__.py"]

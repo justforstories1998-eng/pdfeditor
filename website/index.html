@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF Studio — Edit PDFs at the Speed of Thought</title>
+  <meta name="description" content="A professional-grade PDF editor. Edit text, fill forms, OCR scans, merge splits, redact secrets, sign contracts — all from one fast, offline desktop app." />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/geist-mono" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Aurora background -->
+  <div class="aurora" aria-hidden="true">
+    <div class="aurora-blade aurora-blade-1"></div>
+    <div class="aurora-blade aurora-blade-2"></div>
+    <div class="aurora-blade aurora-blade-3"></div>
+    <div class="aurora-blade aurora-blade-4"></div>
+    <div class="aurora-blade aurora-blade-5"></div>
+    <div class="aurora-grain"></div>
+    <div class="aurora-vignette"></div>
+  </div>
+
+  <!-- Hero -->
+  <main class="hero">
+    <div class="hero-content">
+      <div class="logo-mark">
+        <img src="assets/logo-icon.svg" alt="" width="48" height="48" />
+      </div>
+
+      <h1 class="hero-title">
+        Edit PDFs at the<br />
+        speed of <span class="gradient-word">thought</span>.
+      </h1>
+
+      <p class="hero-subtitle">
+        A professional-grade desktop editor for Windows and macOS.<br />
+        Edit text, fill forms, OCR scans, merge, redact, and sign — fully offline.
+      </p>
+
+      <div class="download-row">
+        <a href="#" class="keycap-btn" id="btn-mac" data-download="mac">
+          <svg class="os-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+          </svg>
+          Download for macOS
+        </a>
+        <a href="#" class="keycap-btn" id="btn-windows" data-download="windows">
+          <svg class="os-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
+          </svg>
+          Download for Windows
+        </a>
+      </div>
+
+      <p class="install-caption">Also available via <code>brew install pdfstudio</code> or <code>winget install PDFStudio</code></p>
+
+      <!-- Command bar mockup -->
+      <div class="command-bar">
+        <div class="command-bar-input">
+          <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <span class="command-query">merge invoice.pdf receipt.pdf</span>
+          <span class="command-caret"></span>
+          <span class="command-mode-pill">Command</span>
+        </div>
+        <div class="command-results">
+          <div class="command-row active">
+            <svg class="row-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <span class="row-label">Merge <code>invoice.pdf</code> + <code>receipt.pdf</code></span>
+            <span class="row-shortcut"><kbd id="mod-key">⌘</kbd><kbd>⏎</kbd></span>
+          </div>
+          <div class="command-row">
+            <svg class="row-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            <span class="row-label">Edit text in <code>contract.pdf</code></span>
+            <span class="row-shortcut"><kbd id="mod-key-2">⌘</kbd><kbd>E</kbd></span>
+          </div>
+          <div class="command-row">
+            <svg class="row-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span class="row-label">OCR scanned <code>notes.pdf</code></span>
+            <span class="row-shortcut"><kbd id="mod-key-3">⌘</kbd><kbd>O</kbd></span>
+          </div>
+          <div class="command-row">
+            <svg class="row-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span class="row-label">Redact <code>confidential.pdf</code></span>
+            <span class="row-shortcut"><kbd id="mod-key-4">⌘</kbd><kbd>R</kbd></span>
+          </div>
+        </div>
+        <div class="command-footer">
+          <span class="hints">↑↓ navigate · enter select · esc dismiss</span>
+          <span class="footer-wordmark">PDF Studio</span>
+        </div>
+      </div>
+
+      <a href="#features" class="ghost-pill">See all features →</a>
+    </div>
+  </main>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <h2 class="section-title">Everything a PDF editor should be</h2>
+    <p class="section-subtitle">Professional-grade tools that work offline, respect your privacy, and never get in your way.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">✏️</div>
+        <h3 class="feature-card-title">Edit Text & Images</h3>
+        <p>Edit existing text in place, insert and crop images, draw vector shapes — all preserving the original layout.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📄</div>
+        <h3 class="feature-card-title">Pages & Forms</h3>
+        <p>Insert, merge, split, crop, resize. Fill every AcroForm widget, generate QR codes, flatten for distribution.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3 class="feature-card-title">OCR & Search</h3>
+        <p>Tesseract and EasyOCR back-ends. Full-text search with regex, confidence reporting, batch processing.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3 class="feature-card-title">AI Assistant</h3>
+        <p>Offline summaries, Q&amp;A with page citations, keyword tagging, grammar checks. No data leaves your machine.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3 class="feature-card-title">Security & Signing</h3>
+        <p>AES-256 encryption, true redaction that deletes content, digital signatures with timestamp validation.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3 class="feature-card-title">Convert & Export</h3>
+        <p>Import DOCX, PPTX, images, HTML. Export to PNG, JPEG, SVG, DOCX, PDF/A, PDF/X — over 20 formats.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="how-it-works">
+    <h2 class="section-title">Get started in seconds</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3 class="step-title">Download</h3>
+        <p>Free for personal use. Native installer for your platform.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3 class="step-title">Open</h3>
+        <p>Drop any PDF, scanned document, or form into the app.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3 class="step-title">Edit</h3>
+        <p>Text, images, forms, signatures — everything is editable.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo.svg" alt="PDF Studio" height="18" />
+      </div>
+      <div class="footer-copy">
+        © 2026 PDF Studio. Open source under the MIT License.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

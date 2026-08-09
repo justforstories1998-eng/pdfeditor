@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 32" fill="none">
+  <defs>
+    <linearGradient id="diamond-grad" x1="16" y1="2" x2="28" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffb347"/>
+      <stop offset="50%" stop-color="#ff6b4a"/>
+      <stop offset="100%" stop-color="#ff2f3a"/>
+    </linearGradient>
+  </defs>
+  <!-- Diamond mark -->
+  <path d="M16 2 L28 16 L16 30 L4 16 Z" fill="url(#diamond-grad)"/>
+  <!-- Subtle white hairline cross -->
+  <line x1="16" y1="5" x2="16" y2="27" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+  <line x1="7" y1="16" x2="25" y2="16" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+  <!-- Wordmark -->
+  <text x="36" y="22" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="18" fill="white">PDF Studio</text>
+</svg>
