@@ -1369,6 +1369,10 @@ def _resolve_font(page: fitz.Page, style: TextStyle) -> tuple[str, str | None]:
             return alias, style.file
         except Exception:
             log.warning("Could not embed {}; falling back to base-14", style.file)
+    # When bold or italic is set, use base14() to get the correct font variant
+    # (e.g., "Helvetica-Bold" instead of just "Helvetica").
+    if style.bold or style.italic:
+        return style.base14(), None
     if style.font in STANDARD_FONTS:
         return STANDARD_FONTS[style.font], None
     return style.base14(), None

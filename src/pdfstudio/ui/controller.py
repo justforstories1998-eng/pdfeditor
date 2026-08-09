@@ -256,6 +256,7 @@ class DocumentController(QObject):
             "text.outdent": lambda: self.change_wrap_indent(-12.0),
             # paragraph selection and reordering
             "text.edit_paragraph": self.edit_paragraph_at_cursor,
+            "text.select_paragraph": self.select_paragraph_at_cursor,
             "text.move_line_up": lambda: self.move_line(-1),
             "text.move_line_down": lambda: self.move_line(1),
             # Word-style formatting
@@ -1204,6 +1205,17 @@ class DocumentController(QObject):
             # including whatever was just typed.
             view.finish_inline_edit(commit=True)
         self.edit_text_block(page, None, point, True)
+
+    def select_paragraph_at_cursor(self) -> None:
+        """Select all text in the paragraph under the cursor."""
+        cursor = self._text_cursor()
+        if cursor is None:
+            return
+        page, point = cursor
+        view = self.window.view
+        if view is not None:
+            view.select_paragraph_at(page, point)
+            self._status("Paragraph selected — press Enter to edit, or use the format toolbar")
 
     def move_line(self, direction: int) -> None:
         """Move the line under the cursor up or down within its paragraph."""

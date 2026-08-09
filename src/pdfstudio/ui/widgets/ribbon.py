@@ -343,6 +343,12 @@ def build_default_tabs() -> list[RibbonTab]:
                             large=True,
                             tooltip="Select and edit the whole paragraph at once",
                         ),
+                        RibbonItem(
+                            "text.select_paragraph",
+                            "Select paragraph",
+                            "text",
+                            tooltip="Select all text in the paragraph under the cursor",
+                        ),
                         RibbonItem("text.align_left", "Align left", "fit-width"),
                         RibbonItem("text.align_center", "Centre", "fit-page"),
                         RibbonItem("text.align_right", "Align right", "fit-width"),
