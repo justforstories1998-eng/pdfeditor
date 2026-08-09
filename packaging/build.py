@@ -113,7 +113,7 @@ def pyinstaller(*, onefile: bool, windowed: bool = True) -> Path:
         separator = ";" if platform.system() == "Windows" else ":"
         command += ["--add-data", f"{resources}{separator}pdfstudio/resources"]
 
-    print(f"→ Building {APP_NAME} {VERSION} with PyInstaller")
+    print(f"-> Building {APP_NAME} {VERSION} with PyInstaller")
     run(command, cwd=ROOT)
     produced = DIST / (BINARY_NAME + (".exe" if platform.system() == "Windows" else ""))
     return produced if onefile else DIST / BINARY_NAME
@@ -270,7 +270,7 @@ Root: HKA; Subkey: "Software\\Classes\\PDFStudio.Document"; \
 ValueType: string; ValueName: ""; ValueData: "PDF Document"; \
 Flags: uninsdeletekey; Tasks: associate
 Root: HKA; Subkey: "Software\\Classes\\PDFStudio.Document\\shell\\open\\command"; \
-ValueType: string; ValueName: ""; ValueData: """"{{app}}\\{BINARY_NAME}.exe"" ""%1"""; \
+ValueType: string; ValueName: ""; ValueData: "\\"{{app}}\\{BINARY_NAME}.exe\\" \\"%1\\""; \
 Tasks: associate
 
 [Run]
@@ -321,7 +321,7 @@ def sign_macos(identity: str) -> None:
         "codesign", "--deep", "--force", "--options", "runtime",
         "--sign", identity, str(app_bundle),
     ])
-    print("→ Signed. Notarise with:")
+    print("-> Signed. Notarise with:")
     print(f"    xcrun notarytool submit {DIST}/PDFStudio-{VERSION}.dmg "
           "--keychain-profile AC_PASSWORD --wait")
     print(f"    xcrun stapler staple {DIST}/PDFStudio-{VERSION}.dmg")
@@ -372,7 +372,7 @@ def main() -> int:
             platform.system(), "onedir"
         )
 
-    print(f"→ Target: {target} ({platform.system()} {platform.machine()})")
+    print(f"-> Target: {target} ({platform.system()} {platform.machine()})")
     builders = {
         "onedir": lambda: pyinstaller(onefile=False),
         "onefile": lambda: pyinstaller(onefile=True),
@@ -391,7 +391,7 @@ def main() -> int:
     if args.sign and platform.system() == "Darwin":
         sign_macos(args.sign)
 
-    print(f"\n✓ Built: {artefact}")
+    print(f"\n-> Built: {artefact}")
     if Path(artefact).is_file():
         print(f"  Size: {Path(artefact).stat().st_size / 1024 / 1024:.1f} MB")
     return 0
