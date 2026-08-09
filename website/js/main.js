@@ -5,11 +5,8 @@
     var ua = navigator.userAgent || "";
     var isMac = /Mac|iPhone|iPad|iPod/i.test(ua);
 
-    // Direct download URLs — update these with your actual release URLs
-    var DOWNLOAD_URLS = {
-      mac: "https://github.com/pdfstudio/pdfstudio/releases/latest/download/PDFStudio-latest.dmg",
-      windows: "https://github.com/pdfstudio/pdfstudio/releases/latest/download/PDFStudio-latest-setup.exe"
-    };
+    // GitHub releases page — update with your actual repo URL
+    var RELEASES_URL = "https://github.com/justforstories1998-eng/pdfeditor/releases";
 
     // Show only the relevant download button
     var btnMac = document.getElementById("btn-mac");
@@ -17,16 +14,10 @@
 
     if (isMac) {
       if (btnWindows) btnWindows.style.display = "none";
-      if (btnMac) {
-        btnMac.setAttribute("href", DOWNLOAD_URLS.mac);
-        btnMac.setAttribute("download", "");
-      }
+      if (btnMac) btnMac.setAttribute("href", RELEASES_URL);
     } else {
       if (btnMac) btnMac.style.display = "none";
-      if (btnWindows) {
-        btnWindows.setAttribute("href", DOWNLOAD_URLS.windows);
-        btnWindows.setAttribute("download", "");
-      }
+      if (btnWindows) btnWindows.setAttribute("href", RELEASES_URL);
     }
 
     // Update modifier key display (⌘ on Mac, Ctrl on Windows)
