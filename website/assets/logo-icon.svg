@@ -1,14 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <defs>
-    <linearGradient id="diamond-grad" x1="16" y1="2" x2="28" y2="30" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#ffb347"/>
-      <stop offset="50%" stop-color="#ff6b4a"/>
-      <stop offset="100%" stop-color="#ff2f3a"/>
-    </linearGradient>
-  </defs>
-  <!-- Diamond mark -->
-  <path d="M16 2 L28 16 L16 30 L4 16 Z" fill="url(#diamond-grad)"/>
-  <!-- Subtle white hairline cross -->
-  <line x1="16" y1="5" x2="16" y2="27" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
-  <line x1="7" y1="16" x2="25" y2="16" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <rect width="120" height="120" fill="#0a0a0a"/>
+  <!-- Red P -->
+  <path d="M30 25 L30 95 L48 95 L48 62 L72 62 L82 62 L82 42 L72 42 L72 25 Z" fill="#e53935"/>
+  <!-- Dark S -->
+  <path d="M52 58 C52 38, 88 38, 88 52 C88 66, 68 68, 52 72 C36 76, 36 98, 52 98 L88 98" stroke="#3d3d3d" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
