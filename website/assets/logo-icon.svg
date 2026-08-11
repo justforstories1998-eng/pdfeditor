@@ -1,7 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-  <rect width="120" height="120" fill="#0a0a0a"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
   <!-- Red P -->
-  <path d="M30 25 L30 95 L48 95 L48 62 L72 62 L82 62 L82 42 L72 42 L72 25 Z" fill="#e53935"/>
+  <path d="
+    M 40 30
+    L 40 170
+    L 65 170
+    L 65 110
+    L 110 110
+    L 130 110
+    L 130 70
+    L 110 70
+    L 110 30
+    Z
+  " fill="#e53935"/>
   <!-- Dark S -->
-  <path d="M52 58 C52 38, 88 38, 88 52 C88 66, 68 68, 52 72 C36 76, 36 98, 52 98 L88 98" stroke="#3d3d3d" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="
+    M 90 100
+    C 90 65, 145 65, 145 90
+    C 145 115, 105 115, 90 120
+    C 75 125, 75 160, 95 160
+    L 145 160
+  " stroke="#3a3a3a" stroke-width="26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
